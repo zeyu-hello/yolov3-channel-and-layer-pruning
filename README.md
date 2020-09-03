@@ -101,7 +101,7 @@ scale参数默认0.001，根据数据集，mAP,BN分布调整，数据分布广�
 再来看看bn的稀疏情况，代码使用tensorboard记录了参与稀疏的bn层的Gmma权重变化，下图左边看到正常训练时Gmma总体上分布在1附近类似正态分布，右边可以看到稀疏过程Gmma大部分逐渐被压到接近0，接近0的通道其输出值近似于常量，可以将其剪掉。<br>
 ![bn](https://github.com/tanluren/yolov3-channel-and-layer-pruning/blob/master/data/img/bn.jpg)
 <br>
-这时候便可以进行剪枝，这里例子使用layer_channel_prune.py同时进行剪通道和剪层，这个脚本融合了slim_prune剪通道策略和layer_prune剪层策略。Global perent剪通道的全局比例为0.93，layer keep每层最低保持通道数比例为0.01，shortcuts剪了16个，相当于剪了48个层(32个CBL，16个shortcut)；下图结果可以看到剪通道后模型掉了一个点，而大小从239M压缩到5.2M，剪层后mAP掉到0.53，大小压缩到4.6M，模型参数减少了98%，推理速度也从16毫秒减到6毫秒（tesla p100测试结果）。<br>
+这时候便可以进行剪枝，这里例子使用layer_channel_prune.py同时进行剪通道和剪层，这个脚本融合了slim_prune剪通道策略和layer_prune剪层策略。Global percent剪通道的全局比例为0.93，layer keep每层最低保持通道数比例为0.01，shortcuts剪了16个，相当于剪了48个层(32个CBL，16个shortcut)；下图结果可以看到剪通道后模型掉了一个点，而大小从239M压缩到5.2M，剪层后mAP掉到0.53，大小压缩到4.6M，模型参数减少了98%，推理速度也从16毫秒减到6毫秒（tesla p100测试结果）。<br>
 `python layer_channel_prune.py --cfg cfg/yolov3-spp-hand.cfg --data data/oxfordhand.data --weights weights/last.pt --global_percent 0.93 --layer_keep 0.01 --shortcuts 16`<br>
 <br>
 ![prune9316](https://github.com/tanluren/yolov3-channel-and-layer-pruning/blob/master/data/img/prune9316.png)
